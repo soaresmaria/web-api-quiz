@@ -91,6 +91,39 @@ function setQuestion(id) {
     }
 }
 
+// EVENT FUNCTION CHECK ANSWERS BEGING PROCESS
+function checkAnswer(event) {
+    event.preventDefault();
+
+    //CREATING ELEMENT OF RIGHT OR WRONG
+    correctWrong.style.display = "block";
+    let p = document.createElement("p");
+    correctWrong.appendChild(p);
+
+    // DISPLAY NEW ELEMENT FOR X AMOUNR OF TIME
+    setTimeout(function () {
+        p.style.display = 'none';
+    }, 1000);
+
+    // RIGHT OR WRONG ANSWER CONDITIONAL STATEMENTS CORRECT
+    if (questions[questionCount].correctAnswer === event.target.value) {
+        p.textContent = "Correct!";
+    } 
+   
+     // RIGHT OR WRONG ANSWER CONDITIONAL STATEMENTS WRONG
+    else if (questions[questionCount].correctAnswer !== event.target.value) {
+        secondsLeft = secondsLeft - 10;
+        p.textContent = "Wrong!";
+    }
+
+    // CYCLE 
+    if (questionCount < questions.length) {
+        questionCount++;
+    }
+    setQuestion(questionCount);
+}
+
+
 // Start timer and display first question when click start quiz
 start.addEventListener("click", startQuiz);
 
