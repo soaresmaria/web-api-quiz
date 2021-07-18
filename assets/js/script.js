@@ -17,8 +17,22 @@ let questionEl = document.querySelector("#question");
 const correctWrong = document.querySelector("#right-wrong");
 let questionCount = 0;
 
+// Final score var
+const finalEl = document.querySelector("#final-score");
+let initialsInput = document.querySelector("#initials");
+
+// High score var 
+const highscoresEl = document.querySelector("#high-scores");
+let scoreListEl = document.querySelector(".score-list");
+let scoreList = [];
 // Call out the answer class buttton
 const ansBtn = document.querySelectorAll("button.answer-btn")
+
+// Var submit, view scores
+let submitScrBtn = document.querySelector("#submit-score");
+let clearScrBtn = document.querySelector("#clearScores");
+let viewScrBtn = document.querySelector("#view-scores");
+let goBackBtn = document.querySelector("#goBack");
 
 // Var answer call
 const ans1Btn = document.querySelector("#answer-1");
@@ -91,16 +105,15 @@ function setQuestion(id) {
     }
 }
 
-// EVENT FUNCTION CHECK ANSWERS BEGING PROCESS
+// Event function check answers process
 function checkAnswer(event) {
     event.preventDefault();
 
-    //CREATING ELEMENT OF RIGHT OR WRONG
+    //Element for right or wrong
     correctWrong.style.display = "block";
     let p = document.createElement("p");
     correctWrong.appendChild(p);
 
-    // DISPLAY NEW ELEMENT FOR X AMOUNR OF TIME
     setTimeout(function () {
         p.style.display = 'none';
     }, 1000);
@@ -123,12 +136,86 @@ function checkAnswer(event) {
     setQuestion(questionCount);
 }
 
+function addScore(event) {
+    event.preventDefault();
 
+    finalEl.style.display = "none";
+    highscoresEl.style.display = "block";
+
+    let init = initialsInput.value.toUpperCase();
+    scoreList.push({ initials: init, score: secondsLeft });
+
+    // High score list
+    scoreList = scoreList.sort((a, b) => {
+        if (a.score < b.score) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+
+      scoreListEl.innerHTML="";
+    for (let i = 0; i < scoreList.length; i++) {
+        let li = document.createElement("li");
+        li.textContent = `${scoreList[i].initials}: ${scoreList[i].score}`;
+        scoreListEl.append(li);
+    }
+
+    // STORAGE OF SCORE 
+    storeScores();
+    displayScores();
+}
+
+function storeScores() {
+    localStorage.setItem("scoreList", scoreList());
+}
+
+function displayScores() {
+    let storedScoreList = parse(localStorage.getItem("scoreList"));
+
+    if (storedScoreList !== null) {
+        scoreList = storedScoreList;
+    }
+}
+
+// CLEAR THE STORE
+function clearScores() {
+    localStorage.clear();
+    scoreListEl.innerHTML="";
+}
 // Start timer and display first question when click start quiz
 start.addEventListener("click", startQuiz);
 
 // Check answer listener event
 ansBtn.forEach(item => {
     item.addEventListener('click', checkAnswer);
+});
+
+// Adding a submit score
+submitScrBtn.addEventListener("click", addScore);
+
+// Go back listener event function
+goBackBtn.addEventListener("click", function () {
+    highscoresEl.style.display = "none";
+    codersIntro.style.display = "block";
+    secondsLeft = 75;
+    time.textContent = `Time:${secondsLeft}s`;
+});
+
+// CLEAR SCORE
+clearScrBtn.addEventListener("click", clearScores);
+
+// HIGH SCORE BUTTON ALERT AND DISPLAY LISTENER EVENT
+viewScrBtn.addEventListener("click", function () {
+    if (highscoresEl.style.display === "none") {
+        highscoresEl.style.display = "block";
+    } 
+    else if (highscoresEl.style.display === "block") {
+        highscoresEl.style.display = "none";
+    } 
+    
+    else {
+        return alert("Hey. Take Quiz. There is No High Score.");
+    }
 });
 
